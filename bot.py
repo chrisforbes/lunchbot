@@ -43,6 +43,7 @@ class Bot(irc.IRCClient):
             self.msg(channel, '!menu: show the menu.')
             self.msg(channel, '!order <n> <special instructions>: order your lunch. `no beetroot` etc can go in `special instructions`')
             self.msg(channel, '!cancel: cancel your order')
+            self.msg(channel, '!list: list current lunch orders')
 
         if op == 'order':
             if len(parts) < 2:
@@ -78,12 +79,32 @@ class Bot(irc.IRCClient):
                 del orders[username]
                 self.msg(channel, 'your order has been canceled.')
 
+        if op == 'list':
+            self.msg(channel, '%d orders for today:' \
+                % sum(len(v) for _,v in orders.items()))
+            by_type = pivot_to_values(flatten_values(orders))
+            for o,n in sorted(by_type.items(), key=lambda x:len(x[1])):
+                instr = o[1] and '(%s) ' % (o[1],) or ''
+                self.msg(channel, '%dx %s %s[%s]' % \
+                    (len(n), menu[o[0]], instr, ','.join(n)))
+
     def privmsg(self, user, channel, msg):
         print 'channel: `%s` user: `%s` msg: `%s`' % (user, channel, msg)
         if msg.startswith('!'):
             self.act( user, channel, msg[1:] )
         elif msg.startswith('lunchbot: '):
             self.act( user, channel, msg[10:] )
+
+def flatten_values(xs):
+    for k,x in xs.items():
+        for x_ in x: yield (k,x_)
+
+def pivot_to_values(xs):
+    result = {}
+    for k,v in xs:
+        if v not in result: result[v] = [k]
+        else: result[v].append(k)
+    return result
 
 class BotFactory(protocol.ClientFactory):
     protocol = Bot
