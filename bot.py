@@ -44,6 +44,7 @@ class Bot(irc.IRCClient):
             self.msg(channel, '!order <n> <special instructions>: order your lunch. `no beetroot` etc can go in `special instructions`')
             self.msg(channel, '!cancel: cancel your order')
             self.msg(channel, '!list: list current lunch orders')
+            self.msg(channel, '!open: open orders for today, clear state')
 
         if op == 'order':
             if len(parts) < 2:
@@ -87,6 +88,10 @@ class Bot(irc.IRCClient):
                 instr = o[1] and '(%s) ' % (o[1],) or ''
                 self.msg(channel, '%dx %s %s[%s]' % \
                     (len(n), menu[o[0]], instr, ','.join(n)))
+
+        if op == 'open':
+            orders = {}
+            self.msg(channel, 'orders are now open!')
 
     def privmsg(self, user, channel, msg):
         print 'channel: `%s` user: `%s` msg: `%s`' % (user, channel, msg)
