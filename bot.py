@@ -72,6 +72,7 @@ class Bot(irc.IRCClient):
             self.msg(channel, 'LBQ lunch menu:')
             for i,m in enumerate(menu):
                 self.msg(channel, '%d) %s' % (i,m))
+            self.msg(channel, '-- end of menu --');
 
         if op == 'cancel':
             if username not in orders:
