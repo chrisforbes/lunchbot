@@ -89,6 +89,7 @@ class Bot(irc.IRCClient):
                 instr = o[1] and '(%s) ' % (o[1],) or ''
                 self.msg(channel, '%dx %s %s[%s]' % \
                     (len(n), menu[o[0]], instr, ','.join(n)))
+            self.msg(channel, '-- end of orders --');
 
         if op == 'open':
             orders = {}
