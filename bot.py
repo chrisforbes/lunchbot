@@ -14,7 +14,13 @@ menu = [
     'Steak & stout pie',
     'Chicken salad',
     'Fish & chips',
-    'Steak sandwich'
+    'Steak sandwich',
+    'Beef burger',
+    'Margherita pizza',
+    'Beer garden pizza',
+    'Smokin\' chicken pizza',
+    'Spicy sausage pizza',
+    'Pizza of the day'
        ]
 
 def maybe_int(x):
