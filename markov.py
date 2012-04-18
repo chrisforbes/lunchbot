@@ -142,6 +142,12 @@ class BotFactory(protocol.ClientFactory):
         print "Connection failed. Reason: %s" % reason
 
 if __name__ == "__main__":
-    chan = 'dullbots'
-    reactor.connectTCP('irc', 6667, BotFactory('#' + chan))
+    name = "jim"
+    channel = 'dullbots'
+    if "--name" in sys.argv:
+        name = sys.argv[sys.argv.index("--name") + 1]
+    if "--channel" in sys.argv:
+        channel = sys.argv[sys.argv.index("--channel") + 1]
+
+    reactor.connectTCP('irc', 6667, BotFactory('#' + channel, name))
     reactor.run()
