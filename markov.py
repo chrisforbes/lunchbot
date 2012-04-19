@@ -111,7 +111,7 @@ class Bot(irc.IRCClient):
         words_pri = self.prioritise_words(words)
 
         if random.uniform(0,1) < should_respond:
-            resps = [x for x in [self.make_response(words_pri) for x in xrange(1,5)] if x]
+            resps = [x for x in [self.make_response(words_pri) for x in xrange(1,15)] if x]
             if not len(resps):
                 return
 
