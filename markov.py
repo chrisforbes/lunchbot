@@ -119,7 +119,7 @@ class Bot(irc.IRCClient):
             def score(r,w):
                 print " ".join(r),
                 r = list(set(r) & self.nouns)
-                s = abs( len([x for x in r if x in w]) / ( len(r) + 0.0 ) - ideal_score )
+                s = abs( len([x for x in r if x in w]) / ( len(r) + 0.1 ) - ideal_score )
                 print " scores " + str(s)
                 return s
             resp = min(resps, key=lambda x: score(x, words_pri))
