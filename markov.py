@@ -81,6 +81,7 @@ class Bot(irc.IRCClient):
     def __init__(self):
         self.forward = Markov('jim.forward.pickle')
         self.reverse = Markov('jim.reverse.pickle')
+        self.load_nouns("nounlist.txt")
         self.output = False
 
     def privmsg(self, user, channel, msg):
@@ -97,6 +98,7 @@ class Bot(irc.IRCClient):
             return
 
         words = msg.split(' ')
+
         if self.nickname in words[0]:
             words = words[1:]
         self.forward.learn(words)
@@ -106,15 +108,21 @@ class Bot(irc.IRCClient):
         if self.nickname in msg:
             should_respond += 1
 
+        words_pri = self.prioritise_words(words)
+
         if random.uniform(0,1) < should_respond:
-            resps = [x for x in [self.make_response(words) for x in xrange(1,5)] if x]
+            resps = [x for x in [self.make_response(words_pri) for x in xrange(1,5)] if x]
             if not len(resps):
                 return
 
-            ideal_score = 0.3
+            ideal_score = 0.8
             def score(r,w):
-                return abs( len([x for x in r if x in w]) / len(r) - ideal_score )
-            resp = min(resps, key=lambda x: score(x, words))
+                print " ".join(r),
+                r = list(set(r) & self.nouns)
+                s = abs( len([x for x in r if x in w]) / ( len(r) + 0.0 ) - ideal_score )
+                print " scores " + str(s)
+                return s
+            resp = min(resps, key=lambda x: score(x, words_pri))
             self.msg(channel, ' '.join(resp))
 
     def make_response(self,words):
@@ -126,6 +134,19 @@ class Bot(irc.IRCClient):
             return rev + [s[0],s[1]] + fwd
         except:
             return None
+
+    def load_nouns(self, nounfile):
+        self.nouns = set()
+        for l in open(nounfile):
+            self.nouns.add(l.strip())
+
+    def prioritise_words(self, words):
+        words2 = set(words)
+        words3 = words2 & self.nouns
+        if len(words3) > 0:
+            #print "Nouns! " + str(words3)
+            return list(words3)
+        return words
 
 class BotFactory(protocol.ClientFactory):
     protocol = Bot
