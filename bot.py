@@ -47,7 +47,7 @@ class Bot(irc.IRCClient):
         if op == 'help':
             self.msg(channel, '!help: show this message.')
             self.msg(channel, '!menu: show the menu.')
-            self.msg(channel, '!order <n> <special instructions>: order your lunch. `no beetroot` etc can go in `special instructions`')
+            self.msg(channel, '!order [<nick>] <n> <special instructions>: order your lunch. `no beetroot` etc can go in `special instructions`')
             self.msg(channel, '!cancel: cancel your order')
             self.msg(channel, '!list: list current lunch orders')
             self.msg(channel, '!open: open orders for today, clear state')
@@ -58,6 +58,10 @@ class Bot(irc.IRCClient):
                 return
 
             item = maybe_int(parts[1])
+            if item == -1 and len(parts) > 2:
+                parts = cmd.split(' ',3)
+                username = parts.pop(1)
+                item = maybe_int(parts[1])
             if item < 0 or item >= len(menu):
                 self.msg(channel, 'that\'s not a thing.')
                 return
@@ -69,10 +73,10 @@ class Bot(irc.IRCClient):
 
             orders[username].append((item,special))
             if special:
-                self.msg(channel, 'added a %s, with instructions: %s.' % \
-                    (menu[item], special))
+                self.msg(channel, '%s added a %s, with instructions: %s.' % \
+                    (username, menu[item], special))
             else:
-                self.msg(channel, 'added a %s.' % menu[item])
+                self.msg(channel, '%s added a %s.' % (username, menu[item]))
 
         if op == 'menu':
             self.msg(channel, 'LBQ lunch menu:')
