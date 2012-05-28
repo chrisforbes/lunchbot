@@ -7,21 +7,25 @@ from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 
 orders = {}
-menu = [
-    'Ham & triple cheese toastie',
-    'The big fry up',
-    '3 egg omelette',
-    'Steak & stout pie',
-    'Chicken salad',
-    'Fish & chips',
-    'Steak sandwich',
-    'Beef burger',
-    'Margherita pizza',
-    'Beer garden pizza',
-    'Smokin\' chicken pizza',
-    'Spicy sausage pizza',
-    'Pizza of the day'
-       ]
+menus = {
+    'lbq': [
+        'Ham & triple cheese toastie',
+        'The big fry up',
+        '3 egg omelette',
+        'Steak & stout pie',
+        'Chicken salad',
+        'Fish & chips',
+        'Steak sandwich',
+        'Beef burger',
+        'Margherita pizza',
+        'Beer garden pizza',
+        'Smokin\' chicken pizza',
+        'Spicy sausage pizza',
+        'Pizza of the day'
+    ]
+}
+
+menu = None
 
 def maybe_int(x):
     try: return int(x)
@@ -50,9 +54,14 @@ class Bot(irc.IRCClient):
             self.msg(channel, '!order [<nick>] <n> <special instructions>: order your lunch. `no beetroot` etc can go in `special instructions`')
             self.msg(channel, '!cancel: cancel your order')
             self.msg(channel, '!list: list current lunch orders')
-            self.msg(channel, '!open: open orders for today, clear state')
+            self.msg(channel, '!open <menu>: open orders for today, clear state')
+            self.msg(channel, '!close: close orders')
 
         if op == 'order':
+            if not menu:
+                self.msg(channel, 'orders are not open.')
+                return
+
             if len(parts) < 2:
                 self.msg(channel, 'i\'m confused about what you wanted.')
                 return
@@ -79,12 +88,20 @@ class Bot(irc.IRCClient):
                 self.msg(channel, '%s added a %s.' % (username, menu[item]))
 
         if op == 'menu':
-            self.msg(channel, 'LBQ lunch menu:')
+            if not menu:
+                self.msg(channel, 'orders are not open.')
+                return
+
+            self.msg(channel, 'menu:')
             for i,m in enumerate(menu):
                 self.msg(channel, '%d) %s' % (i,m))
             self.msg(channel, '-- end of menu --');
 
         if op == 'cancel':
+            if not menu:
+                self.msg(channel, 'orders are not open.')
+                return
+
             if username not in orders:
                 self.msg(channel, 'you don\'t have anything ordered!')
             else:
@@ -92,6 +109,10 @@ class Bot(irc.IRCClient):
                 self.msg(channel, 'your order has been canceled.')
 
         if op == 'list':
+            if not menu:
+                self.msg(channel, 'orders are not open.')
+                return
+
             self.msg(channel, '%d orders for today:' \
                 % sum(len(v) for _,v in orders.items()))
             by_type = pivot_to_values(flatten_values(orders))
@@ -102,8 +123,20 @@ class Bot(irc.IRCClient):
             self.msg(channel, '-- end of orders --');
 
         if op == 'open':
+            if len(parts) < 2:
+                self.msg(channel, 'you didn\'t specify a menu. valid menus are:');
+                for mn in menus.keys():
+                    self.msg(channel, '* %s' % (mn,))
+            if parts[1] not in menus:
+                self.msg(channel, '%s is not a known menu.' % (parts[1],))
+            menu = menus[parts[1]]
             orders = {}
-            self.msg(channel, 'orders are now open!')
+            self.msg(channel, 'orders are now open for %s!' % (parts[1],))
+
+        if op == 'close':
+            self.msg(channel, 'orders are now closed.');
+            orders = {}
+            menu = None
 
     def privmsg(self, user, channel, msg):
         print 'channel: `%s` user: `%s` msg: `%s`' % (user, channel, msg)
