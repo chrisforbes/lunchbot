@@ -27,6 +27,8 @@ menus = {
 
 menu = None
 
+protocols = []
+
 def maybe_int(x):
     try: return int(x)
     except: return -1   # bs
@@ -38,7 +40,13 @@ class Bot(irc.IRCClient):
 
     def signedOn(self):
         self.join(self.factory.channel)
+        self.channel = self.factory.channel
+        protocols.append(self)
         print "Signed on as %s." % self.nickname
+
+    def connectionLost(self, reason):
+        irc.IRCClient.connectionLost(self, reason)
+        protocols.remove(self)
 
     def joined(self, channel):
         print "Joined %s." % channel
@@ -82,10 +90,10 @@ class Bot(irc.IRCClient):
 
             orders[username].append((item,special))
             if special:
-                self.msg(channel, '%s added a %s, with instructions: %s.' % \
+                msgAll('%s added a %s, with instructions: %s.' % \
                     (username, menu[item], special))
             else:
-                self.msg(channel, '%s added a %s.' % (username, menu[item]))
+                msgAll('%s added a %s.' % (username, menu[item]))
 
         if op == 'menu':
             if not menu:
@@ -131,10 +139,10 @@ class Bot(irc.IRCClient):
                 self.msg(channel, '%s is not a known menu.' % (parts[1],))
             menu = menus[parts[1]]
             orders = {}
-            self.msg(channel, 'orders are now open for %s!' % (parts[1],))
+            msgAll('orders are now open for %s!' % (parts[1],))
 
         if op == 'close':
-            self.msg(channel, 'orders are now closed.');
+            msgAll('orders are now closed.');
             orders = {}
             menu = None
 
@@ -156,6 +164,10 @@ def pivot_to_values(xs):
         else: result[v].append(k)
     return result
 
+def msgAll(msg):
+    for protocol in protocols:
+        protocol.msg(protocol.channel, msg)
+
 class BotFactory(protocol.ClientFactory):
     protocol = Bot
 
@@ -171,6 +183,6 @@ class BotFactory(protocol.ClientFactory):
         print "Connection failed. Reason: %s" % reason
 
 if __name__ == "__main__":
-    chan = 'lunch'
-    reactor.connectTCP('irc', 6667, BotFactory('#' + chan))
+    reactor.connectTCP('irc.wgtn.cat-it.co.nz', 6667, BotFactory('#lunch'))
+    reactor.connectTCP('irc.freenode.org', 6667, BotFactory('#catalystlunch'))
     reactor.run()
