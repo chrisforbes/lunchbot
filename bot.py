@@ -110,6 +110,9 @@ class Bot(irc.IRCClient):
                 self.msg(channel, 'orders are not open.')
                 return
 
+            if len(parts) > 1:
+                parts = cmd.split(' ',2)
+                username = parts.pop(1)
             if username not in orders:
                 self.msg(channel, 'you don\'t have anything ordered!')
             else:
