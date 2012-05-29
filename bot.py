@@ -114,7 +114,7 @@ class Bot(irc.IRCClient):
                 self.msg(channel, 'you don\'t have anything ordered!')
             else:
                 del orders[username]
-                self.msg(channel, 'your order has been canceled.')
+                msgAll('%s cancelled their order.' % username)
 
         if op == 'list':
             if not menu:
