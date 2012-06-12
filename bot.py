@@ -9,18 +9,18 @@ from twisted.words.protocols import irc
 orders = {}
 menus = {
     'lbq': [
-        'Ham & triple cheese toastie',
-        'The big fry up',
-        '3 egg omelette',
+        'Quesadilla (needs 3 options)',
+        'Vegetable curry',
         'Steak & stout pie',
         'Chicken salad',
         'Fish & chips',
-        'Steak sandwich',
+        'Chicken sandwich',
         'Beef burger',
         'Margherita pizza',
         'Beer garden pizza',
         'Smokin\' chicken pizza',
         'Spicy sausage pizza',
+        'Four wheel drive pizza',
         'Pizza of the day'
     ]
 }
