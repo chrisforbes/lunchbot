@@ -9,7 +9,7 @@ from twisted.words.protocols import irc
 orders = {}
 menus = {
     'lbq': [
-        [ 'Quesadilla (needs 3 options)' , 'cheese and your choice of 3 fillings in a toasted tortilla with sour chream. Fillings are: smoky chicken, chorizo, salami, jalapenos, tomato, spinach, roasted red peppers, red onion, chipotle sauce, pesto, mozzarella, blue cheese cream cheese, brie, feta. $12' ],
+        [ 'Quesadilla (needs 3 options)' , 'cheese and your choice of 3 fillings in a toasted tortilla with sour cream. Fillings are: smoky chicken, chorizo, salami, jalapenos, tomato, spinach, roasted red peppers, red onion, chipotle sauce, pesto, mozzarella, blue cheese, cream cheese, brie, feta. $12' ],
         [ 'Vegetable curry' , 'Paneer, chickpea and vegetable curry with rice and beer naan. $15' ],
         [ 'Steak & stout pie' , 'Steak and cheddar pie with craft stout gravy and shoestring fries. $17' ],
         [ 'Chicken salad' , 'Harissa marinated chicken salad with roasted beetroot, rocket, grilled halloumi and walnuts in a citrus vinaigrette. $16' ],
